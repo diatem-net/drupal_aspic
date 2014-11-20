@@ -1,0 +1,118 @@
+<?php
+
+include 'sites/all/modules/drupal_aspic/config.php';
+include 'sites/all/modules/drupal_aspic/drupalaspic.php';
+
+//Menu d'aide
+function drupal_aspic_help($path, $arg) {
+    switch ($path) {
+	case "admin/help#drupal_aspic":
+	    return '<p><table border=0 width="100%"><tr><td width=310><img src="/sites/all/modules/drupal_aspic/logo.jpg"></td><td>'. t("<h2>Usage</h2>Active l'authentification à Drupal via un service d'authentification unifié Aspic. <br><br><h2>Précautions d'usage</h2>L'activation du module désactive l'authentification à Drupal via le système standard. <br>En cas d'erreur de configuration, modifier le fichier config.php situé dans le dossier du module pour forcer sa désactivation.<br><br><h2>Sources</h2><b>Serveur Aspic</b><br><a href='https://github.com/diatem-net/aspicserver'>https://github.com/diatem-net/aspicserver</a><br><br><b>Client</b><br><a href='https://github.com/diatem-net/aspicclient'>https://github.com/diatem-net/aspicclient</a>") . '</td></tr></table></p>';
+	    break;
+    }
+}
+
+//Menu administration
+function drupal_aspic_menu() {
+    $items = array();
+    $items['admin/config/services/drupal_aspic'] = array(
+	'title' => 'Paramètres Aspic',
+	'description' => 'Paramètres de la connexion au service d\'authentification unifié Aspic.',
+	'page callback' => 'drupal_get_form',
+	'page arguments' => array('drupal_aspic_form'),
+	'access arguments' => array('access administration pages'),
+	'type' => MENU_NORMAL_ITEM,
+    );
+    return $items;
+}
+
+//Désactive la gestion des utilisateurs dans le BackOffice
+function drupal_aspic_menu_alter(&$items) {
+    if(ASPIC_ENABLED){
+        unset($items['admin/people']);
+    }
+}
+
+//Formulaire de configuration
+function drupal_aspic_form($form, &$form_state) {
+    $form['drupal_aspic_host'] = array(
+	'#type' => 'textfield',
+	'#title' => 'Url du serveur Aspic',
+	'#default_value' => variable_get('drupal_aspic_host'),
+	'#description' => 'sans le protocole devant. (ex. serveuraspic.fr)',
+	'#required' => TRUE,
+    );
+    $form['drupal_aspic_serviceid'] = array(
+	'#type' => 'textfield',
+	'#title' => 'ID du service',
+	'#default_value' => variable_get('drupal_aspic_serviceid'),
+	'#description' => 'Tel que configuré sur Aspic.',
+	'#required' => TRUE,
+    );
+    $form['drupal_aspic_privatekey'] = array(
+	'#type' => 'textfield',
+	'#title' => 'Clé privée',
+	'#default_value' => variable_get('drupal_aspic_privatekey'),
+	'#description' => 'Telle que configurée sur Aspic.',
+	'#required' => TRUE,
+    );
+    $form['drupal_aspic_ssl'] = array(
+	'#type' => 'checkbox',
+	'#title' => 'SSL activé',
+	'#default_value' => variable_get('drupal_aspic_ssl'),
+	'#description' => 'Active l\'appel à Aspic en https. (Si supporté). Devrait être activé pour un système en production.'
+    );
+    $form['drupal_aspic_helptext'] = array(
+	'#type' => 'textfield',
+	'#title' => 'texte d\'invite à la connexion affiché sur le front-end',
+	'#default_value' => variable_get('drupal_aspic_helptext'),
+	'#description' => '',
+	'#required' => TRUE,
+    );
+    $form['drupal_aspic_cnxbtntext'] = array(
+	'#type' => 'textfield',
+	'#title' => 'texte affiché sur le bouton de connexion sur le front-end',
+	'#default_value' => variable_get('drupal_aspic_cnxbtntext'),
+	'#description' => '',
+	'#required' => TRUE,
+    );
+    return system_settings_form($form);
+}
+
+//Appelé pour toute page - vérification Aspic
+function drupal_aspic_init(){
+    if(ASPIC_ENABLED){
+        DrupalAspic::init();
+    }
+}
+
+//Modification des données envoyées pour construire le formulaire de login
+function drupal_aspic_form_alter(&$form, &$form_state, $form_id) {
+    if(ASPIC_ENABLED && $form_id == 'user_login_block') {
+    	$form['links']['#markup'] = variable_get('drupal_aspic_helptext');
+    	unset($form['name']);
+    	unset($form['pass']);
+    	$form['#validate'] = array();
+    	$form['#validate'][] = 'custom_login_validate';
+    	$form['#submit'] = array();
+    	$form['#submit'][] = 'custom_login_submit';
+    	
+    	$form['actions']['submit']['#value'] = variable_get('drupal_aspic_cnxbtntext');
+    }
+}
+
+//Validation des données de login envoyées
+function custom_login_validate() {
+}
+
+//Custom au login. Connexion Aspic
+function custom_login_submit($form, &$form_state) {
+    DrupalAspic::login();
+    exit();
+}
+
+
+//Custom au logout
+function drupal_aspic_user_logout(){
+    
+}
