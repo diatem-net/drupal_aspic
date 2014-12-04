@@ -88,7 +88,7 @@ function drupal_aspic_init(){
 
 //Modification des données envoyées pour construire le formulaire de login
 function drupal_aspic_form_alter(&$form, &$form_state, $form_id) {
-    if(ASPIC_ENABLED && ($form_id == 'user_login_block' || $form_id == 'user_login')) {
+    if(ASPIC_ENABLED && $form_id == 'user_login_block') {
     	$form['links']['#markup'] = variable_get('drupal_aspic_helptext');
     	unset($form['name']);
     	unset($form['pass']);
