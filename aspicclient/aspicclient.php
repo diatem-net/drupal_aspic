@@ -101,7 +101,10 @@ class AspicClient{
 		    return false;
 		}
 		
+
 		$decryptedResults = openssl_decrypt($results, self::$encryptMethod, self::$privateKey, false, self::$initializationVector);
+		
+		
 		
 		if (!$decryptedResults) {
 		    return false;
