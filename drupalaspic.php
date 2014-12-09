@@ -21,6 +21,7 @@ class DrupalAspic {
         //Test if action Logout et authentifié : logout de Drupal
         if (isset($_SERVER['REDIRECT_URL']) && $_SERVER['REDIRECT_URL'] == '/user/logout' && self::isAuthentified()) {
             self::logoutFromDrupal();
+	    self::logout();
         }
 
 
@@ -151,17 +152,28 @@ class DrupalAspic {
                 } else {
                     Logs::log('#3 : compte local Drupal existe : N');
                     Logs::log('ACTION : CREATION COMPTE DRUPAL');
-                    $roles = self::getUserRoles();
+                    $roles = self::getUserRoles();  
+		    $drupalRoles = user_roles();
+		    
+		    $setRoles = array();
+		    foreach($drupalRoles as $k => $r){
+			foreach($roles as $ar){
+			    if($r == $ar){
+				$setRoles[$k] = $r;
+			    }
+			}
+		    }
+		    
                     $new_user = array(
                         'name' => AspicClient::getUserId(),
                         'pass' => self::randomPassword(),
                         'mail' => AspicClient::getUserId(),
-                        'status' => 1
+                        'status' => 1,
+			'roles' => $setRoles
                     );
                     
                     //Enregistrement
                     $account = user_save(null, $new_user);
-                    self::updateUserRoles($account->uid, $roles);
 
                     //connexion
                     Logs::log('ACTION : CONNEXION');
@@ -170,6 +182,13 @@ class DrupalAspic {
             }
         } else {
             //AUTH ASPIC : N
+	    
+	    //Test #5 - authentifié Drupal ?
+            if ($user->uid) {
+                //Authentifié Drupal : Y
+                Logs::log('#5 : authentifié sur Drupal : YES');
+		self::logoutFromDrupal();
+	    }
         }
     }
 
@@ -183,12 +202,11 @@ class DrupalAspic {
 
     public static function logout() {
         AspicClient::logout();
+	exit;
     }
 
     private static function logoutFromDrupal(){
         session_destroy();
-        self::logout();
-        exit;
     }
 
     private static function logInDrupal($drupalUId){
