@@ -1,13 +1,13 @@
 <?php
 
-include 'sites/all/modules/drupal_aspic/config.php';
+include 'sites/all/modules/drupal_aspic/config/config.php';
 include 'sites/all/modules/drupal_aspic/drupalaspic.php';
 
 //Menu d'aide
 function drupal_aspic_help($path, $arg) {
     switch ($path) {
 	case "admin/help#drupal_aspic":
-	    return '<p><table border=0 width="100%"><tr><td width=310><img src="/sites/all/modules/drupal_aspic/logo.jpg"></td><td>'. t("<h2>Usage</h2>Active l'authentification à Drupal via un service d'authentification unifié Aspic. <br><br><h2>Précautions d'usage</h2>L'activation du module désactive l'authentification à Drupal via le système standard. <br>En cas d'erreur de configuration, modifier le fichier config.php situé dans le dossier du module pour forcer sa désactivation.<br><br><h2>Sources</h2><b>Serveur Aspic</b><br><a href='https://github.com/diatem-net/aspicserver'>https://github.com/diatem-net/aspicserver</a><br><br><b>Client</b><br><a href='https://github.com/diatem-net/aspicclient'>https://github.com/diatem-net/aspicclient</a>") . '</td></tr></table></p>';
+	    return '<p><table border=0 width="100%"><tr><td width=310><img src="/sites/all/modules/drupal_aspic/logo.jpg"></td><td>'. t("<h2>Usage</h2>Active l'authentification à Drupal via un service d'authentification unifié Aspic. <br><br><h2>Précautions d'usage</h2>L'activation du module désactive l'authentification à Drupal via le système standard. <br>En cas d'erreur de configuration, modifier le fichier config.php situé dans le dossier config/ du module pour forcer sa désactivation.<br><br><h2>Sources</h2><b>Serveur Aspic</b><br><a href='https://github.com/diatem-net/aspicserver'>https://github.com/diatem-net/aspicserver</a><br><br><b>Client</b><br><a href='https://github.com/diatem-net/aspicclient'>https://github.com/diatem-net/aspicclient</a>") . '</td></tr></table></p>';
 	    break;
     }
 }

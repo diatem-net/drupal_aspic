@@ -1,6 +1,6 @@
 name = Authentification à Drupal via Aspic.
 description = Implémente l'authentification unifiée à Drupal via le service d'authentification unique Aspic.
 core = 7.x
-version = "0.7.0"
+version = "1.0.0"
 
 configure = admin/config/services/drupal_aspic

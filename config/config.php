@@ -8,3 +8,7 @@ define('ASPIC_LOGS_ENABLED', false);
 define('ASPIC_LOGS_FILE', 'logs.txt');
 //(Uniquement si ASPIC_LOGS_ENABLED=true) permet de sortir également les logs dans le rendu HTML. (à des fins de debug uniquement)
 define('ASPIC_LOGS_INOUTPUT', false);
+//Méthode d'encryption. (Selon configuration serveur)
+define('ASPIC_ENCRYPTMETHOD', 'aes128');
+//Vecteur d'initialisation
+define('ASPIC_ENCRYPTVECTOR', '1234567812345678');
