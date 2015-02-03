@@ -14,7 +14,7 @@ class DrupalAspic {
 
     public static function init() {
         //Initialisation Aspic
-        AspicClient::init(variable_get('drupal_aspic_host'), variable_get('drupal_aspic_serviceid'), variable_get('drupal_aspic_privatekey'), variable_get('drupal_aspic_ssl'));
+        AspicClient::init(variable_get('drupal_aspic_host'), variable_get('drupal_aspic_serviceid'), variable_get('drupal_aspic_privatekey'), variable_get('drupal_aspic_ssl'), ASPIC_ENCRYPTMETHOD, ASPIC_ENCRYPTVECTOR, array('q'));
 
         global $user;
 
