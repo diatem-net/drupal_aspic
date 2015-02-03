@@ -78,7 +78,7 @@ class SecureCookie {
      * @param boolean $secure       Accès uniquement via une connexion securisée
      * @param boolean $httponly     Accès HTTP seulement
      */
-    public static function setSecureCookie($serviceId, $cookiename, $value, $privateKey, $expire = 0, $path = '', $domain = '', $secure = false, $httponly = null) {
+    public static function setSecureCookie($serviceId, $cookiename, $value, $privateKey, $expire = 0, $path = '/', $domain = '', $secure = false, $httponly = null) {
         $json = json_encode($value);
         $securedValue = openssl_encrypt($json, self::$encodeMethod, $privateKey, false, self::$initializationVector);
 
@@ -100,7 +100,7 @@ class SecureCookie {
      * @param boolean $secure       Accès uniquement via une connexion securisée
      * @param boolean $httponly     Accès HTTP seulement
      */
-    public static function setUnsecureCookie($cookiename, $value, $expire = 0, $path = '', $domain = '', $secure = false, $httponly = null) {
+    public static function setUnsecureCookie($cookiename, $value, $expire = 0, $path = '/', $domain = '', $secure = false, $httponly = null) {
         /* httponly option is only available for PHP version >= 5.2 */
         if ($httponly === null) {
             setcookie($cookiename, $value, $expire, $path, $domain, $secure);

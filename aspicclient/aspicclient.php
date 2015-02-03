@@ -139,6 +139,7 @@ class AspicClient {
     public static function login($extraArguments = null) {
         if (!self::isAuthentified()) {
             header('Location:' . self::getLoginServerUrl($extraArguments));
+            exit;
         }
     }
 
@@ -149,6 +150,7 @@ class AspicClient {
     public static function logout() {
         SecureCookie::delete(self::getCookieName());
         header('Location:' . self::getLoginServerUrl() . '&logout=1');
+        exit;
     }
 
     
@@ -191,6 +193,52 @@ class AspicClient {
         return self::$groups;
     }
 
+
+    
+    /**
+     * Retourne l'Url courante
+     * @return string
+     */
+   public static function getCurrentUrl() {
+
+        $pageURL = 'http';
+        if (isset($_SERVER['https']) && $_SERVER["HTTPS"] == "on") {
+            $pageURL .= "s";
+        }
+        $pageURL .= "://";
+        $pageURL .= $_SERVER["SERVER_NAME"] . $_SERVER["REQUEST_URI"];
+
+        return $pageURL;
+    }
+
+    
+    /**
+     * Retourne l'Url courante sans les arguments GET inutiles
+     * @return string
+     */
+    public static function getCurrentUrlWithoutArgs() {
+
+        $currentArgs = $_GET;
+        $currentUrl = self::getCurrentUrl();
+
+        $currentUrlSeg = explode('?', $currentUrl);
+        $currentUrl = $currentUrlSeg[0];
+
+        $first = true;
+        foreach ($currentArgs as $k => $v) {
+            if ($k != 's' && $k != 'sid' && !in_array($k, self::$ignoredGetArgs, true)) {
+                if ($first) {
+                    $currentUrl .= '?' . $k . '=' . $v;
+                    $first = false;
+                } else {
+                    $currentUrl .= '&' . $k . '=' . $v;
+                }
+            }
+        }
+
+        return $currentUrl;
+    }
+    
     
     /**
      * Vérifie si des données retournées par le serveur ASPIC sont transmises, auquel cas on effectue la connexion.
@@ -207,9 +255,10 @@ class AspicClient {
             $data = json_decode($unsecured, true);
 
 
-            SecureCookie::setSecureCookie(self::$serviceId, self::getCookieName(), $data['uid'], self::$privateKey, 0, '', '', false, null);
+            SecureCookie::setSecureCookie(self::$serviceId, self::getCookieName(), $data['uid'], self::$privateKey, 0, '/', '', false, null);
 
             header('Location: ' . self::getCurrentUrlWithoutArgs());
+            exit;
         }
     }
 
@@ -331,48 +380,5 @@ class AspicClient {
     }
 
     
-    /**
-     * Retourne l'Url courante
-     * @return string
-     */
-    private static function getCurrentUrl() {
-
-        $pageURL = 'http';
-        if (isset($_SERVER['https']) && $_SERVER["HTTPS"] == "on") {
-            $pageURL .= "s";
-        }
-        $pageURL .= "://";
-        $pageURL .= $_SERVER["SERVER_NAME"] . $_SERVER["REQUEST_URI"];
-
-        return $pageURL;
-    }
-
-    
-    /**
-     * Retourne l'Url courante sans les arguments GET inutiles
-     * @return string
-     */
-    private static function getCurrentUrlWithoutArgs() {
-
-        $currentArgs = $_GET;
-        $currentUrl = self::getCurrentUrl();
-
-        $currentUrlSeg = explode('?', $currentUrl);
-        $currentUrl = $currentUrlSeg[0];
-
-        $first = true;
-        foreach ($currentArgs as $k => $v) {
-            if ($k != 's' && $k != 'sid' && !in_array($k, self::$ignoredGetArgs, true)) {
-                if ($first) {
-                    $currentUrl .= '?' . $k . '=' . $v;
-                    $first = false;
-                } else {
-                    $currentUrl .= '&' . $k . '=' . $v;
-                }
-            }
-        }
-
-        return $currentUrl;
-    }
 
 }
