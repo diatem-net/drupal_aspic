@@ -18,12 +18,6 @@ class DrupalAspic {
 
         global $user;
 
-        //Test if action Logout et authentifié : logout de Drupal
-        if (isset($_SERVER['REDIRECT_URL']) && $_SERVER['REDIRECT_URL'] == '/user/logout' && self::isAuthentified()) {
-            self::logoutFromDrupal();
-	    self::logout();
-        }
-
 
         //Test #1 - authentifié Aspic ?
         if (self::isAuthentified()) {
@@ -202,12 +196,14 @@ class DrupalAspic {
 
     public static function logout() {
         AspicClient::logout();
+        self::logoutFromDrupal();
 	exit;
     }
-
-    private static function logoutFromDrupal(){
+    
+    public static function logoutFromDrupal(){
         session_destroy();
     }
+
 
     private static function logInDrupal($drupalUId){
         global $user;
@@ -215,6 +211,9 @@ class DrupalAspic {
 
         $login_array = array('name' => $user->name);
         user_login_finalize($login_array);
+        
+        header('Location: '.AspicClient::getCurrentUrlWithoutArgs());
+        exit;
     }
 
     private static function randomPassword(){

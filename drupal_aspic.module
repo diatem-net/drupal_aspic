@@ -114,5 +114,5 @@ function custom_login_submit($form, &$form_state) {
 
 //Custom au logout
 function drupal_aspic_user_logout(){
-    
+    DrupalAspic::logout();
 }
