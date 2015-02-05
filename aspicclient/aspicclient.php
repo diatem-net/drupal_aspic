@@ -315,7 +315,7 @@ class AspicClient {
                 return false;
             }
         } else {
-            return false;
+            return true;
         }
     }
 
