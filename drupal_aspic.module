@@ -63,7 +63,7 @@ function drupal_aspic_form($form, &$form_state) {
 	'#description' => 'Active l\'appel à Aspic en https. (Si supporté). Devrait être activé pour un système en production.'
     );
     $form['drupal_aspic_helptext'] = array(
-	'#type' => 'textfield',
+	'#type' => 'textarea',
 	'#title' => 'texte d\'invite à la connexion affiché sur le front-end',
 	'#default_value' => variable_get('drupal_aspic_helptext'),
 	'#description' => '',
