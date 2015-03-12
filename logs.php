@@ -6,7 +6,7 @@
  * @author Loïc Gerard <lgerard@diatem.net>
  */
 class Logs{
-   
+
     /**
      * Logs initialisés
      * @var boolean
@@ -24,7 +24,7 @@ class Logs{
      * @var mixed
      */
     private static $fp;
-    
+
     /**
      * Initialisation des logs
      * @return [type] [description]
@@ -33,11 +33,11 @@ class Logs{
         if(self::$initialized){
             return;
         }
-       
-        self::$log_file = 'sites/all/modules/drupal_aspic/'.ASPIC_LOGS_FILE;
+
+        self::$log_file = MODULE_ROOT.'/'.ASPIC_LOGS_FILE;
         self::$initialized = true;
     }
-    
+
 
     /**
      * Enregistre un log
@@ -50,7 +50,7 @@ class Logs{
         }
         self::write($message);
     }
-    
+
 
     /**
      * Ecrit dans le fichier
@@ -70,7 +70,7 @@ class Logs{
             echo $message.'<br>';
         }
     }
-    
+
 
     /**
      * Ouvre le fichier en écriture
@@ -78,7 +78,7 @@ class Logs{
     private static function open(){
         self::$fp = fopen(self::$log_file, 'a') or exit("Can't open $lfile!");
     }
-    
+
 
     /**
      * Ferme le fichier

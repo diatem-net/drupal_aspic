@@ -1,7 +1,7 @@
 <?php
 
-include 'aspicclient/aspicclient.php';
-include 'logs.php';
+include MODULE_ROOT.'/aspicclient/aspicclient.php';
+include MODULE_ROOT.'/logs.php';
 
 
 class DrupalAspic {
@@ -28,7 +28,7 @@ class DrupalAspic {
             if ($user->uid) {
                 //Authentifié Drupal : Y
                 Logs::log('#2 : authentifié sur Drupal : YES');
-                
+
                 //Comparaison userId Drupal et userId Aspic
                 //test #5
                 if ($user->name == AspicClient::getUserId()) {
@@ -51,7 +51,7 @@ class DrupalAspic {
                 if ($drupalUser) {
                     //Compte Drupal existe
                     Logs::log('#3 : compte Drupal local existe : YES');
-                    
+
                     //Test si les roles sont justes
                     //On récupère les roles Aspic de l'utilisateur
                     $aspicGroups = AspicClient::getUserGroups();
@@ -128,17 +128,17 @@ class DrupalAspic {
                         Logs::log('#4 : rôles compte Drupal cohérents avec rôles compte Aspic : YES');
                         Logs::log('ACTION : CONNEXION SUR DRUPAL');
                         //CONNEXION OK
-                        
+
                         //COnnexion
                         self::logInDrupal($drupalUser->uid);
                     } else {
                         //Role checking : N
                         Logs::log('#4 : rôles compte Drupal cohérents avec rôles compte Aspic : NO');
                         Logs::log('ACTION : MISE A JOUR DES DROITS DRUPAL');
-                        
+
                         //On met à jour les droits
                         self::updateUserRoles($drupalUser->uid, $roles);
-                        
+
                         //COnnexion
                         Logs::log('ACTION : CONNEXION SUR DRUPAL');
                         self::logInDrupal($drupalUser->uid);
@@ -146,26 +146,26 @@ class DrupalAspic {
                 } else {
                     Logs::log('#3 : compte local Drupal existe : N');
                     Logs::log('ACTION : CREATION COMPTE DRUPAL');
-                    $roles = self::getUserRoles();  
-		    $drupalRoles = user_roles();
-		    
-		    $setRoles = array();
-		    foreach($drupalRoles as $k => $r){
-			foreach($roles as $ar){
-			    if($r == $ar){
-				$setRoles[$k] = $r;
-			    }
-			}
-		    }
-		    
+                    $roles = self::getUserRoles();
+                    $drupalRoles = user_roles();
+
+                    $setRoles = array();
+                    foreach($drupalRoles as $k => $r){
+                        foreach($roles as $ar){
+                            if($r == $ar){
+                                $setRoles[$k] = $r;
+                            }
+                        }
+                    }
+
                     $new_user = array(
                         'name' => AspicClient::getUserId(),
                         'pass' => self::randomPassword(),
                         'mail' => AspicClient::getUserId(),
                         'status' => 1,
-			'roles' => $setRoles
+                        'roles' => $setRoles
                     );
-                    
+
                     //Enregistrement
                     $account = user_save(null, $new_user);
 
@@ -176,13 +176,13 @@ class DrupalAspic {
             }
         } else {
             //AUTH ASPIC : N
-	    
-	    //Test #5 - authentifié Drupal ?
+
+            //Test #5 - authentifié Drupal ?
             if ($user->uid) {
                 //Authentifié Drupal : Y
                 Logs::log('#5 : authentifié sur Drupal : YES');
-		self::logoutFromDrupal();
-	    }
+                self::logoutFromDrupal();
+            }
         }
     }
 
@@ -197,9 +197,9 @@ class DrupalAspic {
     public static function logout() {
         AspicClient::logout();
         self::logoutFromDrupal();
-	exit;
+        exit;
     }
-    
+
     public static function logoutFromDrupal(){
         session_destroy();
     }
@@ -211,7 +211,7 @@ class DrupalAspic {
 
         $login_array = array('name' => $user->name);
         user_login_finalize($login_array);
-        
+
         header('Location: '.AspicClient::getCurrentUrlWithoutArgs());
         exit;
     }
@@ -252,7 +252,7 @@ class DrupalAspic {
             if($r != 'authenticated user'){
                 $myuserroles[] = $r;
             }
-            
+
         }
 
         //On met à jour l'utilisateur
