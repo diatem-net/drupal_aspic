@@ -186,8 +186,8 @@ class DrupalAspic {
         }
     }
 
-    public static function login() {
-        AspicClient::login();
+    public static function login($extraArguments = null) {
+        AspicClient::login($extraArguments);
     }
 
     public static function isAuthentified() {
@@ -212,6 +212,20 @@ class DrupalAspic {
         $login_array = array('name' => $user->name);
         user_login_finalize($login_array);
 
+        //Test si les extra arguments spécifient une redirection nécessaire vers une page intérieure
+        if(AspicClient::isAuthentified() && !isset($_SESSION['redirected'])){
+            $_SESSION['redirected'] = true;
+            $ea = AspicClient::getExtraArguments();
+            
+            if(isset($ea['destination'])){
+                global $base_url;
+                $_SESSION['redirected'] = true;
+                
+                header('Location: ' . $base_url.'/'.$ea['destination']);
+                exit;
+            }
+        }
+        
         header('Location: '.AspicClient::getCurrentUrlWithoutArgs());
         exit;
     }
