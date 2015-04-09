@@ -30,7 +30,7 @@ function drupal_aspic_menu() {
 
 //Désactive la gestion des utilisateurs dans le BackOffice
 function drupal_aspic_menu_alter(&$items) {
-    if(ASPIC_ENABLED){
+    if(ASPIC_ENABLED && !variable_get('drupal_aspic_droitsenabled')){
         unset($items['admin/people']);
     }
 }
@@ -82,7 +82,7 @@ function drupal_aspic_form($form, &$form_state) {
         '#type' => 'checkbox',
         '#title' => 'Accès aux droits en BO activés',
         '#default_value' => variable_get('drupal_aspic_droitsenabled'),
-        '#description' => 'Active l\'accès aux droits en BackOffice. FALSE pour un environnement en production' 
+        '#description' => 'Active l\'accès aux droits en BackOffice. FALSE pour un environnement en production. Nécessite de supprimer le cache après application. <a href="/admin/config/development/performance">Vider le cache</a>' 
     );
     return system_settings_form($form);
 }
@@ -96,7 +96,7 @@ function drupal_aspic_init(){
 
 //Modification des données envoyées pour construire le formulaire de login
 function drupal_aspic_form_alter(&$form, &$form_state, $form_id) {
-    if(variable_get('drupal_aspic_droitsenabled') && ASPIC_ENABLED && ($form_id == 'user_login_block' || $form_id == 'user_login')) {
+    if(ASPIC_ENABLED && ($form_id == 'user_login_block' || $form_id == 'user_login')) {
         $form['links']['#markup'] = variable_get('drupal_aspic_helptext');
         unset($form['name']);
         unset($form['pass']);
