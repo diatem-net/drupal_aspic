@@ -339,7 +339,7 @@ class AspicClient {
      * @param array $extraArguments Données contextuelles liées à la connexion qui seront transmises à Aspic. (Si activé sur le serveur)
      * @return string
      */
-    private static function getLoginServerUrl($extraArguments = null) {
+    public static function getLoginServerUrl($extraArguments = null) {
         if (self::$serverLoginUrl) {
             return self::$serverLoginUrl;
         }
