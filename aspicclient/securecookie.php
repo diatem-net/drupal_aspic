@@ -106,7 +106,7 @@ class SecureCookie {
             return false;
         }
 
-        $cookieValue = $_COOKIE[$cookiename];
+        $cookieValue = $_SESSION[$cookiename];
         $encoded = self::ListGetAt($cookieValue, 0, '|');
         $control = self::ListGetAt($cookieValue, 1, '|');
 
