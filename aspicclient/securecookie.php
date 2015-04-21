@@ -63,7 +63,7 @@ class SecureCookie {
      * @return boolean
      */
     public static function cookieExists($cookiename) {
-        return (isset($_COOKIE[$cookiename]));
+        return (isset($_SESSION[$cookiename]));
     }
 
     /**
@@ -72,20 +72,15 @@ class SecureCookie {
      * @param string $cookiename    Nom du cookie
      * @param string $value         Valeur à stocker
      * @param string $privateKey    Clé privée
-     * @param int $expire           Expiration
-     * @param string $path          Chemin
-     * @param string $domain        Domaine
-     * @param boolean $secure       Accès uniquement via une connexion securisée
-     * @param boolean $httponly     Accès HTTP seulement
      */
-    public static function setSecureCookie($serviceId, $cookiename, $value, $privateKey, $expire = 0, $path = '/', $domain = '', $secure = false, $httponly = null) {
+    public static function setSecureCookie($serviceId, $cookiename, $value, $privateKey) {
         $json = json_encode($value);
         $securedValue = openssl_encrypt($json, self::$encodeMethod, $privateKey, false, self::$initializationVector);
 
-        $controlString = $serviceId . '|' . $expire . '|' . $securedValue . '|' . md5($_SERVER['HTTP_USER_AGENT']);
+        $controlString = $serviceId . '|' . $securedValue . '|' . md5($_SERVER['HTTP_USER_AGENT']);
         $controlString = hash(self::$hashMethod, $controlString);
 
-        self::setUnsecureCookie($cookiename, $securedValue . '|' . $controlString, $expire, $path, $domain, $secure, $httponly);
+        self::setUnsecureCookie($cookiename, $securedValue . '|' . $controlString);
     }
 
     /**
@@ -93,20 +88,9 @@ class SecureCookie {
      * @param string $name cookie name
      * @param string $cookiename    Nom du cookie
      * @param string $value         Valeur à stocker
-     * @param string $privateKey    Clé privée
-     * @param int $expire           Expiration
-     * @param string $path          Chemin
-     * @param string $domain        Domaine
-     * @param boolean $secure       Accès uniquement via une connexion securisée
-     * @param boolean $httponly     Accès HTTP seulement
      */
-    public static function setUnsecureCookie($cookiename, $value, $expire = 0, $path = '/', $domain = '', $secure = false, $httponly = null) {
-        /* httponly option is only available for PHP version >= 5.2 */
-        if ($httponly === null) {
-            setcookie($cookiename, $value, $expire, $path, $domain, $secure);
-        } else {
-            setcookie($cookiename, $value, $expire, $path, $domain, $secure, $httponly);
-        }
+    public static function setUnsecureCookie($cookiename, $value) {
+        $_SESSION[$cookiename] = $value;
     }
 
     /**
@@ -115,11 +99,10 @@ class SecureCookie {
      * @param string $serviceId     Service ID
      * @param string $privateKey    Clé privée
      * @param string $md5UserAgent  UserAgent hashé (MD5)
-     * @param int $expire           Expiration
      * @return boolean|string
      */
-    public static function getSecureCookie($cookiename, $serviceId, $privateKey, $md5UserAgent = null, $expire = 0) {
-        if (!isset($_COOKIE[$cookiename])) {
+    public static function getSecureCookie($cookiename, $serviceId, $privateKey, $md5UserAgent = null) {
+        if (!isset($_SESSION[$cookiename])) {
             return false;
         }
 
@@ -131,7 +114,7 @@ class SecureCookie {
             $md5UserAgent = md5($_SERVER['HTTP_USER_AGENT']);
         }
 
-        $controlString = hash(self::$hashMethod, $serviceId . '|' . $expire . '|' . $encoded . '|' . $md5UserAgent);
+        $controlString = hash(self::$hashMethod, $serviceId . '|' . $encoded . '|' . $md5UserAgent);
         if ($controlString != $control) {
             return false;
         }
