@@ -254,7 +254,7 @@ class AspicClient {
             $unsecured = openssl_decrypt($secured, self::$encryptMethod, self::$privateKey, false, self::$initializationVector);
             $data = json_decode($unsecured, true);
 
-            SecureCookie::setSecureCookie(self::$serviceId, self::getCookieName(), $data['uid'], self::$privateKey);
+            SecureCookie::setSecureCookie(self::$serviceId, self::getCookieName(), $data['uid'], self::$privateKey, 0, '/', '', false, null);
 
             header('Location: ' . self::getCurrentUrlWithoutArgs());
             exit;
@@ -269,7 +269,7 @@ class AspicClient {
     private static function getAuthDataFromServer() {
         if (!self::$serverDataGetted) {
             if (SecureCookie::cookieExists(self::getCookieName())) {
-                $uid = SecureCookie::getSecureCookie(self::getCookieName(), self::$serviceId, self::$privateKey, md5($_SERVER['HTTP_USER_AGENT']));
+                $uid = SecureCookie::getSecureCookie(self::getCookieName(), self::$serviceId, self::$privateKey, md5($_SERVER['HTTP_USER_AGENT']), 0);
 
                 if (!$uid) {
                     return false;
